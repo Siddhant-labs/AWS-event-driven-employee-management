@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management System</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+            color: #222;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #17365d;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            margin-bottom: 22px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #00000012;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            margin: 7px 0 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 4px;
+            background: #1769aa;
+            color: white;
+            cursor: pointer;
+        }
+
+        .delete-button {
+            background: #c0392b;
+        }
+
+        .message {
+            padding: 10px;
+            background: #e4f5e9;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #17365d;
+            color: white;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1>Employee Management System</h1>
+    <p>Manage employee records using Flask and Amazon DynamoDB.</p>
+
+    <div class="card">
+        <h2>Add Employee</h2>
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form action="{{ url_for('add_employee') }}" method="POST">
+            <label for="name">Employee Name *</label>
+            <input id="name" type="text" name="name"
+                   placeholder="Enter employee name" required>
+
+            <label for="email">Email *</label>
+            <input id="email" type="email" name="email"
+                   placeholder="Enter email address" required>
+
+            <label for="department">Department</label>
+            <input id="department" type="text" name="department"
+                   placeholder="e.g. IT">
+
+            <label for="skill">Skill</label>
+            <input id="skill" type="text" name="skill"
+                   placeholder="e.g. AWS, Python">
+
+            <button type="submit">Add Employee</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Employee Records</h2>
+
+        {% if employees %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Skill</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for employee in employees %}
+                    <tr>
+                        <td>{{ employee.name }}</td>
+                        <td>{{ employee.email }}</td>
+                        <td>{{ employee.department }}</td>
+                        <td>{{ employee.skill }}</td>
+                        <td>
+                            <form
+                                action="{{ url_for('delete_employee', employee_id=employee.employee_id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Delete this employee?');">
+                                <button class="delete-button" type="submit">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p>No employee records found. Add your first employee above.</p>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>
